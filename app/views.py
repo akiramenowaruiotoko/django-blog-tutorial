@@ -26,3 +26,18 @@ class CreatePostView(LoginRequiredMixin, View):
         return render(request, 'app/post_form.html', {
             'form': form
         })
+
+    def post(self, request, *args, **kwargs):
+        form = PostForm(request.POST or None)
+
+        if form.is_valid():
+            post_data = Post()
+            post_data.author = request.user
+            post_data.title = form.cleaned_data['title']
+            post_data.content = form.cleaned_data['content']
+            post_data.save()
+            return redirect('post_detail', post_data.id)
+
+        return render(request, 'app/post_form.html', {
+            'form': form
+        })
